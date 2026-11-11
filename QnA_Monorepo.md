@@ -1,43 +1,56 @@
-# Q&amp;A- Monorepo & Package Management
+# Q&amp;A- Monorepo &amp; Package Management
 
 This document provides clarity on the repository structure, monorepo management, and how it integrates with package registries like GitHub Packages.
 
-<details>
-<summary>About monorepo structure</summary>
+<details class="orca-details" open>
+<summary>`**About monorepo structure**`</summary>
 
 ### 📂 Repository Structure Overview
+
 The repository is organized into three distinct types of areas:
-*   **`projects/`**: Ongoing active developments (Production-grade apps).
-*   **`packages/`**: Shared utilities, components, and helper modules (Reusable code).
-*   **`playground/`**: Experimental prototypes and "what if" scenarios (Testing ground).
 
-### ❓ Frequently Asked Questions
+- **`projects/`**: Ongoing active developments (Production-grade apps).
+- **`packages/`**: Shared utilities, components, and helper modules (Reusable code).
+- **`playground/`**: Experimental prototypes and "what if" scenarios (Testing ground).
 
-<details>
+### ❓ Questions and Answers
+
+<details class="orca-details">
 <summary>Q: Are these folders automatically categorized by GitHub?</summary>
+
 **A:** No. GitHub treats all files as a standard directory structure. They are manually created as folders and  project files are placed within them to maintain this organization.
+
 </details>
 
-<details>
+<details class="orca-details">
 <summary>Q: How these directories are created on the GitHub UI?</summary>
+
 **A:** Since there is no "Create Folder" button, account owner has created a new file with the folder name as part of the path (e.g., `projects/.gitkeep`). The `.gitkeep` file ensures that Git tracks the directory even if it is empty.
+
 </details>
 
-<details open>
+<details class="orca-details">
 <summary>Q: Do I have to clone everything every time I want to work on one specific package?</summary>
+
 **A:** By default, yes—Git clones the entire repository history and content. However, for large repositories, you can use **Sparse Checkout** to download only specific folders, or **Worktrees** to manage multiple active working directories simultaneously.
+
 </details>
 
-<details open>
+<details class="orca-details">
 <summary>Q: Does a monorepo structure make sense with GitHub Packages?</summary>
+
 **A:** Yes! It is an industry-standard practice. 
-*   The **Monorepo folder structure** is for *Development*: It allows you to share code and see changes instantly across different projects locally.
-*   **GitHub Packages/Registries** are for *Distribution*: They allow other developers or machines to "install" your package as a dependency from the internet.
+
+- The **Monorepo folder structure** is for *Development*: It allows you to share code and see changes instantly across different projects locally.
+- **GitHub Packages/Registries** are for *Distribution*: They allow other developers or machines to "install" your package as a dependency from the internet.
+
 </details>
 
-<details open>
+<details class="orca-details">
 <summary>Q: How to set up a package within an existing directory?</summary>
+
 **A:**  To make a folder in `packages/` act as a distributable package, you must provide it with its own configuration file (like `package.json` for npm). You then use GitHub Actions to build that specific folder and "publish" it to the registry whenever changes are pushed.
+
 </details>
 
 </details>
@@ -45,6 +58,7 @@ The repository is organized into three distinct types of areas:
 ---
 
 ### 📊 Summary Comparison Table
+
 
 | Feature               | Monorepo Folders (`packages/`)                                          | GitHub Packages / Registry                        |
 | :--------------------- | :----------------------------------------------------------------------- | :------------------------------------------------- |
