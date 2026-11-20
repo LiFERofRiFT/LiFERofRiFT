@@ -56,11 +56,13 @@ body {
 .tracker_label {
 	color: var(--neon-blue);
 	text-transform: uppercase;
-	font-size: large;
+	font-size: xx-large;
+	padding-right: 8px;
 }
 .tracker_value_text {
 	color: var(--neon-green);
-	font-size: x-large;
+	font-size: xx-large;
+	padding-left: 8px;
 }
 
 .progress_container {
@@ -313,4 +315,163 @@ button_btn {
 	display: flex;
 	flex-direction: row;
 	padding-bottom: 16px;
+}
+
+/* ── Overlay Header Row & Mode Indicator ── */
+.overlay_header_row {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	margin-bottom: 15px;
+}
+
+.overlay_header_row .title_tag {
+	margin-bottom: 0;
+}
+
+.mode_indicator_pill {
+	position: absolute;
+	right: 0;
+	top: -5px;
+	font-size: 0.65rem;
+	font-weight: 800;
+	letter-spacing: 1px;
+	padding: 2px 7px;
+	border-radius: 12px;
+	text-transform: uppercase;
+	user-select: none;
+}
+
+.pill_linked {
+	color: var(--neon-blue);
+	border: 1px solid var(--neon-blue);
+	background: rgba(3, 233, 244, 0.15);
+	box-shadow: 0 0 8px rgba(3, 233, 244, 0.4);
+}
+
+.pill_unlinked {
+	color: var(--cyber-yellow);
+	border: 1px solid var(--cyber-yellow);
+	background: rgba(252, 238, 55, 0.15);
+	box-shadow: 0 0 8px rgba(252, 238, 55, 0.4);
+}
+
+/* ── Sync Control Section in Config Panel ── */
+.sync_section {
+	background: rgba(10, 10, 25, 0.8);
+	border: 1px solid var(--neon-blue);
+	border-radius: 6px;
+	padding: 12px;
+	margin-bottom: 18px;
+	box-shadow: inset 0 0 8px rgba(3, 233, 244, 0.2);
+}
+
+.sync_status_header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 0.75rem;
+	font-weight: bold;
+}
+
+.sync_status_dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	display: inline-block;
+}
+
+.dot_linked {
+	background-color: var(--neon-green);
+	box-shadow: 0 0 8px var(--neon-green);
+}
+
+.dot_unlinked {
+	background-color: var(--cyber-yellow);
+	box-shadow: 0 0 8px var(--cyber-yellow);
+}
+
+.sync_status_label {
+	color: #888;
+}
+
+.sync_status_badge {
+	font-size: 0.75rem;
+	font-weight: bold;
+	padding: 2px 6px;
+	border-radius: 4px;
+}
+
+.badge_linked {
+	color: var(--neon-green);
+	background: rgba(44, 255, 5, 0.1);
+	border: 1px solid var(--neon-green);
+}
+
+.badge_unlinked {
+	color: var(--cyber-yellow);
+	background: rgba(252, 238, 55, 0.1);
+	border: 1px solid var(--cyber-yellow);
+}
+
+.sync_description {
+	font-size: 0.7rem;
+	color: #bbb;
+	margin: 8px 0 10px 0;
+	line-height: 1.3;
+}
+
+.sync_actions {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.sync_btn {
+	flex: 1;
+	min-width: 130px;
+	padding: 7px 10px;
+	font-size: 0.75rem;
+	font-weight: bold;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.25s ease;
+	text-align: center;
+}
+
+.btn_unlink {
+	background: rgba(255, 0, 255, 0.15);
+	border: 1px solid var(--neon-pink);
+	color: var(--neon-pink);
+}
+
+.btn_unlink:hover {
+	background: var(--neon-pink);
+	color: #000;
+	box-shadow: 0 0 10px var(--neon-pink);
+}
+
+.btn_link_adopt {
+	background: rgba(3, 233, 244, 0.15);
+	border: 1px solid var(--neon-blue);
+	color: var(--neon-blue);
+}
+
+.btn_link_adopt:hover {
+	background: var(--neon-blue);
+	color: #000;
+	box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.btn_link_push {
+	background: rgba(44, 255, 5, 0.15);
+	border: 1px solid var(--neon-green);
+	color: var(--neon-green);
+}
+
+.btn_link_push:hover {
+	background: var(--neon-green);
+	color: #000;
+	box-shadow: 0 0 10px var(--neon-green);
 }
