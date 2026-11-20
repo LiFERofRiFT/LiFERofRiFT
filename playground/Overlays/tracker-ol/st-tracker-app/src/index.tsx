@@ -6,11 +6,11 @@ import preactLogo from './assets/preact.svg';
 import './style.css';
 
 export function App() {
-        const [title, setTitle] = useState("SYSTEM_STATUS");
+        const [title, setTitle] = useState("Header");
         const [trackers, setTrackers] = useState([
-            { id: 1, label: "CPU_LOAD", value: 45, max: 100 },
-            { id: 2, label: "SYNC_RATE", value: 88, max: 100 },
-            { id: 3, label: "MEM_POOL", value: 72, max: 128 }
+            { id: 1, label: "Tracker 1", value: 45, max: 100 },
+            { id: 2, label: "Tracker 2", value: 88, max: 100 },
+            { id: 3, label: "Tracker 3", value: 72, max: 128 }
         ]);
 
         const [isExpanded, setIsExpanded] = useState(false);
@@ -19,9 +19,11 @@ export function App() {
             setTrackers(prev => prev.map(t => t.id === id ? { ...t, [field]: (field === 'value' || field === 'max') ? Number(val) : val } : t));
         };
 
+        const isInvalid = (t) => t.value > t.max;
+
         const addTracker = () => {
             const newId = Date.now();
-            setTrackers([...trackers, { id: newId, label: "NEW_LINK", value: 0, max: 100 }]);
+            setTrackers([...trackers, { id: newId, label: "Tracker "+ (trackers?.length+1 || 0), value: 0, max: 100 }]);
         };
 
         const removeTracker = (id) => setTrackers(trackers.filter(t => t.id !== id));
@@ -36,7 +38,7 @@ export function App() {
                             <div class="tracker_item">
                                 <div class="tracker_header">
                                     <span class="tracker_label">${t.label}</span>
-                                    <span>${t.value}/${t.max}</span>
+                                    <span class="tracker_value_text">${t.value}/${t.max}</span>
                                 </div>
                                 <div class="progress_container">
                                     <div class="progress_fill" style="width: ${pct}%"></div>
@@ -61,13 +63,42 @@ export function App() {
                     </div>
                     <b/>
 
-                    ${trackers.map(t => html`
+                    ${trackers.map(t => {
+                        const invalid = isInvalid(t);
+                        return html`
                         <div class="input_group">
                             <input type="text" value="${t.label}" onInput=${(e) => updateTracker(t.id, 'label', e.target.value)}/>
-                            <input type="number" value="${t.value}" onInput=${(e) => updateTracker(t.id, 'value', e.target.value)}/>
+                            <div class="val_field_wrap ${invalid ? 'has_error' : ''}">
+                                <input
+                                    class="val_input ${invalid ? 'input_error' : ''}"
+                                    type="number"
+                                    value="${t.value}"
+                                    onInput=${(e) => updateTracker(t.id, 'value', e.target.value)}
+                                />
+                                ${invalid ? html`
+                                    <div class="warn_icon" title="Value exceeds max! (${t.value} > ${t.max})">
+                                        <span class="warn_triangle"><span class="warn_triangle_text">!</span></span>
+                                        <div class="warn_tooltip">⚠ value (${t.value}) exceeds max (${t.max})</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="val_field_wrap ${invalid ? 'has_error' : ''}">
+                                <input
+                                    class="val_input ${invalid ? 'input_error' : ''}"
+                                    type="number"
+                                    value="${t.max}"
+                                    onInput=${(e) => updateTracker(t.id, 'max', e.target.value)}
+                                />
+                                ${invalid ? html`
+                                    <div class="warn_icon" title="Max is below current value! (${t.max} < ${t.value})">
+                                        <span class="warn_triangle"><span class="warn_triangle_text">!</span></span>
+                                        <div class="warn_tooltip">⚠ max (${t.max}) is below value (${t.value})</div>
+                                    </div>
+                                ` : ''}
+                            </div>
                             <button onClick=${() => removeTracker(t.id)}>X</button>
                         </div>
-                    `)}
+                    `})}
 
                     <button class="add_btn" onClick=${addTracker}>+ ADD NEW TRACKER</button>
                 </div>

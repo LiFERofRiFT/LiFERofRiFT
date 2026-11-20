@@ -3,6 +3,7 @@
 	--neon-pink: #ff00ff;
 	--neon-blue: #03e9f4;
 	--cyber-yellow: #fcee37;
+	--neon-green: #2CFF05;
 	--text-color: #ffffff;
 }
 
@@ -33,7 +34,7 @@ body {
 
 .title_tag {
 	text-align: center;
-	font-size: 1.4rem;
+	font-size: 2.5rem;
 	font-weight: bold;
 	text-transform: uppercase;
 	margin-bottom: 30px;
@@ -55,6 +56,11 @@ body {
 .tracker_label {
 	color: var(--neon-blue);
 	text-transform: uppercase;
+	font-size: large;
+}
+.tracker_value_text {
+	color: var(--neon-green);
+	font-size: x-large;
 }
 
 .progress_container {
@@ -124,15 +130,18 @@ body {
 
 /* Expansion Logic */
 .hidden {
-	display: none;
-	opacity: 0;
-	transform: translateY(20px);
+	 max-height: 0;
+      opacity: 0;
+      padding-top: 0; /* Fixed typo from paddingtop */
+      padding-bottom: 0; /* Fixed typo from paddingbottom */
+      overflow: hidden;
 }
 
 .visible {
 	display: block;
 	opacity: 1;
 	transform: translateY(0);
+	max-height: 700px; /* Sufficiently large height for content */
 }
 
 .control_card h3 {
@@ -144,9 +153,112 @@ body {
 
 .input_group {
 	display: grid;
-	grid-template-columns: 2fr 1fr auto;
+	grid-template-columns: 2fr 1fr 1fr auto;
 	gap: 10px;
 	margin-bottom: 10px;
+	align-items: center;
+}
+
+/* Value / Max wrapper — holds input + optional warning icon */
+.val_field_wrap {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.val_input {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* Red border when invalid + extra right padding to make room for the icon
+   before the native number spinner (~17px) */
+.val_field_wrap.has_error .val_input,
+
+.input_error {
+	border-color: #ff3355 !important;
+	box-shadow: 0 0 6px rgba(255, 51, 85, 0.6);
+	padding-right: 19px;
+	min-width: fit-content;
+}
+
+/* ── Warning triangle icon ─────────────────────────── */
+/* Sits INSIDE the input, just to the left of the native spinner */
+.warn_icon {
+	position: absolute;
+	right: 7px;           /* clears the ~17px native spinner track */
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	z-index: 20;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Triangle shape via border-radius trick — 12px square rotated 45° */
+.warn_triangle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 12px;
+	height: 12px;
+	background: #ff3355;
+	color: #fff;
+	font-size: 0.5rem;
+	font-weight: 900;
+	border-radius: 3px 3px 3px 0px;   /* one sharp corner → triangle feel */
+	transform: rotate(-45deg);
+	box-shadow: 0 0 5px rgba(255, 51, 85, 0.9);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	line-height: 1;
+	user-select: none;
+	writing-mode: horizontal-tb;
+}
+
+.warn_icon:hover .warn_triangle {
+	transform: rotate(-45deg) scale(1.2);
+	box-shadow: 0 0 10px rgba(255, 51, 85, 1);
+}
+
+/* Inner span counter-rotates the "!" text to stay upright */
+.warn_triangle_text {
+	display: inline-block;
+	transform: rotate(45deg);
+}
+
+/* Tooltip */
+.warn_tooltip {
+	display: none;
+	position: absolute;
+	bottom: calc(100% + 10px);
+	left: 50%;
+	transform: translateX(-50%);
+	background: #1a0010;
+	color: #ff3355;
+	border: 1px solid #ff3355;
+	border-radius: 4px;
+	padding: 5px 9px;
+	font-size: 0.72rem;
+	white-space: nowrap;
+	box-shadow: 0 0 10px rgba(255, 51, 85, 0.5);
+	z-index: 100;
+	pointer-events: none;
+}
+
+/* Small caret arrow on the bottom of the tooltip */
+.warn_tooltip::after {
+	content: '';
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	border: 5px solid transparent;
+	border-top-color: #ff3355;
+}
+
+.warn_icon:hover .warn_tooltip {
+	display: block;
 }
 
 input {
