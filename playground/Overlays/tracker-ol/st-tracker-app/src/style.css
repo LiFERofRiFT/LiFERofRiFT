@@ -12,6 +12,7 @@
 	--bright-neon-pink: #FE01B1;
 	--neon-fuchsia: #FE4164;
 	--neon-magenta: #FF08E8;
+	--neon-magenta-glow: 0 0 32px rgba(200, 0, 255, 0.827), inset 0 0 18px #8b3495ac;
 	--neon-coral: #F86F88;
 	--neon-raspberry: #FF0088;
 	--neon-electric-crimson: #FF003F;
@@ -31,26 +32,49 @@ body {
 }
 
 /* Tracker Overlay Styling */
-.overlay-container {
-	width: 350px;
-	padding: 30px;
-	background: var(--bg-color);
-	border: 2px solid var(--neon-blue);
-	box-shadow: 0 0 15px var(--neon-blue);
-	clip-path: polygon(0% 15%, 15% 0%, 85% 0%, 100% -2deg, -2px skewX(-3deg));
-	position: relative;
-	transition: all 0.4s ease;
-}
-
 .overlay_container {
 	width: fit-content;
 	min-width: min(350px, calc(100vw - 80px));
 	max-width: min(var(--card-max-width), calc(100vw - 80px));
 	box-sizing: border-box;
+	padding: 20px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: flex-start;
+	position: relative;
+	isolation: isolate;
+	border: 1.5px solid transparent;
+	border-radius: 8px;
+	background:
+		linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
+		conic-gradient(
+			from var(--edge-glimmer-angle),
+			rgba(3, 233, 244, 0.28) 0deg 285deg,
+			rgba(3, 233, 244, 0.95) 320deg,
+			rgba(255, 0, 255, 0.95) 340deg,
+			rgba(3, 233, 244, 0.28) 360deg
+		) border-box;
+	box-shadow:var(--neon-magenta-glow);
+	animation: overlay_edge_glimmer 7s linear infinite;
+}
+
+@property --edge-glimmer-angle {
+	syntax: '<angle>';
+	inherits: false;
+	initial-value: 0deg;
+}
+
+@keyframes overlay_edge_glimmer {
+	to {
+		--edge-glimmer-angle: 360deg;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.overlay_container {
+		animation: none;
+	}
 }
 
 .title_tag {
