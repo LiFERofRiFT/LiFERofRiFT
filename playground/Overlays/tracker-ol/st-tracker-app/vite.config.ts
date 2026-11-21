@@ -1,8 +1,20 @@
 import { defineConfig, type Plugin } from 'vite';
 import preact from '@preact/preset-vite';
 import fs from 'node:fs';
+import https from 'node:https';
 import { fileURLToPath } from 'node:url';
 import type { IncomingMessage, ServerResponse } from 'node:http';
+
+const certPath = fileURLToPath(new URL('./certs/cert.pem', import.meta.url));
+const keyPath = fileURLToPath(new URL('./certs/key.pem', import.meta.url));
+
+const httpsConfig =
+	fs.existsSync(certPath) && fs.existsSync(keyPath)
+		? {
+				cert: fs.readFileSync(certPath),
+				key: fs.readFileSync(keyPath),
+			}
+		: null;
 
 function trackerSyncPlugin(): Plugin {
 	const dataFilePath = fileURLToPath(new URL('./tracker-data.json', import.meta.url));
@@ -118,9 +130,56 @@ function trackerSyncPlugin(): Plugin {
 		name: 'tracker-sync-plugin',
 		configureServer(server) {
 			server.middlewares.use(middleware);
+
+			// Companion HTTPS server on port 5174 for network/vEthernet while keeping port 5173 plain HTTP for local overlays
+			if (httpsConfig) {
+				const httpsServer = https.createServer(httpsConfig, (req, res) => {
+					server.middlewares(req, res);
+				});
+
+				httpsServer.on('upgrade', (req, socket, head) => {
+					server.httpServer?.emit('upgrade', req, socket, head);
+				});
+
+				const HTTPS_PORT = 5174;
+				httpsServer.listen(HTTPS_PORT, '0.0.0.0', () => {
+					// eslint-disable-next-line no-console
+					console.log(`\n  🔓 HTTP  (Local Overlay):     http://localhost:5173/`);
+					// eslint-disable-next-line no-console
+					console.log(`  🔒 HTTPS (Network / Wi-Fi):   https://192.168.1.4:${HTTPS_PORT}/`);
+					// eslint-disable-next-line no-console
+					console.log(`  🔒 HTTPS (vEthernet Hyper-V): https://172.27.48.1:${HTTPS_PORT}/\n`);
+				});
+
+				server.httpServer?.on('close', () => {
+					httpsServer.close();
+				});
+			}
 		},
 		configurePreviewServer(server) {
 			server.middlewares.use(middleware);
+
+			if (httpsConfig) {
+				const httpsServer = https.createServer(httpsConfig, (req, res) => {
+					server.middlewares(req, res);
+				});
+
+				httpsServer.on('upgrade', (req, socket, head) => {
+					server.httpServer?.emit('upgrade', req, socket, head);
+				});
+
+				const HTTPS_PORT = 5174;
+				httpsServer.listen(HTTPS_PORT, '0.0.0.0', () => {
+					// eslint-disable-next-line no-console
+					console.log(`\n  🔓 HTTP  (Local Preview):     http://localhost:5173/`);
+					// eslint-disable-next-line no-console
+					console.log(`  🔒 HTTPS (Network Preview):    https://192.168.1.4:${HTTPS_PORT}/\n`);
+				});
+
+				server.httpServer?.on('close', () => {
+					httpsServer.close();
+				});
+			}
 		},
 	};
 }
@@ -130,10 +189,13 @@ export default defineConfig({
 	server: {
 		host: '0.0.0.0',
 		port: 5173,
+		// Primary server remains plain HTTP so local OBS / desktop overlays on localhost work without certificate blocks
+		https: undefined,
 	},
 	preview: {
 		host: '0.0.0.0',
 		port: 5173,
+		https: undefined,
 	},
 	plugins: [
 		preact({

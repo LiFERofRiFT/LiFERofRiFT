@@ -5,6 +5,7 @@
 		"dev": "vite",
 		"build": "vite build",
 		"preview": "vite preview",
+		"gen:cert": "node scripts/generate-cert.js",
 		"lint": "oxlint src --config .oxlintrc.json",
 		"lint:eslint": "eslint src",
 		"lint:all": "oxlint src --config .oxlintrc.json && eslint src"
