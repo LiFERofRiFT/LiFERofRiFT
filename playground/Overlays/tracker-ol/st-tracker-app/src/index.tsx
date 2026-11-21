@@ -9,6 +9,7 @@ export interface Tracker {
 	label: string;
 	value: number;
 	max: number;
+	failed?: boolean;
 }
 
 export interface TrackerState {
@@ -24,7 +25,7 @@ const BROADCAST_CHANNEL_NAME = 'overlay_tracker_sync_channel';
 const DEFAULT_STATE: TrackerState = {
 	title: 'Progression/Goals',
 	trackers: [
-		{ id: 1, label: 'Tracker 1', value: 45, max: 100 },
+		{ id: 1, label: 'Tracker 1', value: 45, max: 100, failed: false },
 	],
 };
 
@@ -371,6 +372,16 @@ export function App() {
 		}
 	};
 
+	// toggle for tracker failure
+	const toggleTrackerFailed = (id: number) => {
+			commitState(prev => ({
+					...prev,
+					trackers: prev.trackers.map(t =>
+							t.id === id ? { ...t, failed: !t.failed } : t
+					),
+			}));
+	};
+
 	const isInvalid = (t: Tracker) => t.value > t.max;
 
 	return html`
@@ -385,14 +396,19 @@ export function App() {
 			<div class="tracker_list">
 				${trackers.map(t => {
 					const pct = Math.min((t.value / t.max) * 100, 100);
+					const isFailed = Boolean(t.failed);
 					return html`
-						<div class="tracker_item" key=${t.id}>
+						<div class="tracker_item ${isFailed? 'tracker_failed' : ''}" key=${t.id}>
 							<div class="tracker_header">
-								<span class="tracker_label">${t.label}</span>
+								<div class="tracker_label_wrap">
+									<span class="tracker_label">${t.label}</span>
+								${isFailed ? html`<span class="fail_status_badge">FAILED //</span?`:''}
+								</div>
 								<span class="tracker_value_text">${t.value}/${t.max}</span>
 							</div>
-							<div class="progress_container">
-								<div class="progress_fill" style="width: ${pct}%"></div>
+
+							<div class="progress_container ${isFailed? 'progress_failed': ''}">
+								<div class="progress_fill ${isFailed ? "fill_failed": ''}" style="width: ${pct}%"></div>
 							</div>
 						</div>
 					`;
@@ -496,6 +512,14 @@ export function App() {
 										`
 									: ''}
 							</div>
+							<button
+									type="button"
+									class="fail_toggle_btn ${t.failed ? 'btn_is_failed' : ''}"
+									onClick=${() => toggleTrackerFailed(t.id)}
+									title="${t.failed ? 'Click to mark as Active' : 'Click to mark as Failed'}"
+							>
+									${t.failed ? '☠ FAIL' : '✓ OK'}
+							</button>
 							<button onClick=${() => removeTracker(t.id)}>X</button>
 						</div>
 					`;
