@@ -8,6 +8,14 @@
 	--neon-red: #ff003c; 
 	--neon-red-glow: 0 0 10px #ff003c, 0 0 20px rgba(255, 0, 60, 0.6);
 	--neon-red-dim: rgba(255, 0, 60, 0.15);
+	--neon-hot-pink: #FF0AEF ;
+	--bright-neon-pink: #FE01B1;
+	--neon-fuchsia: #FE4164;
+	--neon-magenta: #FF08E8;
+	--neon-coral: #F86F88;
+	--neon-raspberry: #FF0088;
+	--neon-electric-crimson: #FF003F;
+	--card-max-width: 600px;
 }
 
 body {
@@ -32,7 +40,17 @@ body {
 	clip-path: polygon(0% 15%, 15% 0%, 85% 0%, 100% -2deg, -2px skewX(-3deg));
 	position: relative;
 	transition: all 0.4s ease;
+}
 
+.overlay_container {
+	width: fit-content;
+	min-width: min(350px, calc(100vw - 80px));
+	max-width: min(var(--card-max-width), calc(100vw - 80px));
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
 }
 
 .title_tag {
@@ -43,6 +61,8 @@ body {
 	margin-bottom: 30px;
 	color: var(--cyber-yellow);
 	text-shadow: 2px 2px var(--neon-pink);
+	overflow-wrap: anywhere;
+	min-width: 0;
 }
 
 .tracker_item {
@@ -80,11 +100,14 @@ body {
 		text-transform: uppercase;
 		clip-path: polygon(0 0, 90% 0, 100% 30%, 100% 100%, 10% 100%, 0 70%);
 		animation: cyber_flicker 2.5s infinite;
+		flex: 0 0 auto;
 }
 .tracker_label_wrap {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 
@@ -93,6 +116,7 @@ body {
 	justify-content: space-between;
 	margin-bottom: 5px;
 	font-size: 0.8rem;
+	min-width: 0;
 }
 
 .tracker_label {
@@ -100,11 +124,22 @@ body {
 	text-transform: uppercase;
 	font-size: xx-large;
 	padding-right: 8px;
+	flex: 0 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .tracker_value_text {
 	color: var(--neon-green);
 	font-size: xx-large;
 	padding-left: 8px;
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: 65%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .progress_container {
@@ -182,8 +217,10 @@ body {
 
 /* Configuration Card Styling */
 .control_card {
-	min-width: fit-content;
-	width: 350px;
+	box-sizing: border-box;
+	width: fit-content;
+	min-width: min(350px, calc(100vw - 80px));
+	max-width: min(var(--card-max-width), calc(100vw - 80px));
 	padding: 25px;
 	background: #1a1a2e;
 	border: 1px solid var(--neon-pink);
@@ -217,7 +254,7 @@ body {
 
 .input_group {
 	display: grid;
-	grid-template-columns: 2fr 1fr 1fr auto auto;
+	grid-template-columns: minmax(0, 2fr) max-content max-content auto auto;
 	gap: 8px;
 	margin-bottom: 10px;
 	align-items: center;
@@ -228,11 +265,18 @@ body {
 	position: relative;
 	display: flex;
 	align-items: center;
+	justify-self: start;
+	width: fit-content;
+	max-width: 100%;
+	min-width: 0;
 }
 
 .val_input {
-	width: 100%;
+	max-width: 100%;
 	box-sizing: border-box;
+	min-width: 0;
+	width: calc(5ch + 54px);
+
 }
 
 /* Red border when invalid + extra right padding to make room for the icon
@@ -242,8 +286,7 @@ body {
 .input_error {
 	border-color: #ff3355 !important;
 	box-shadow: 0 0 6px rgba(255, 51, 85, 0.6);
-	padding-right: 19px;
-	min-width: fit-content;
+	padding-right: 22px;
 }
 
 /* ── Warning triangle icon ─────────────────────────── */
@@ -344,6 +387,7 @@ input {
 		border: 1px solid #444;
 		color: #888;
 		transition: all 0.2s ease;
+		min-width: 9ch;
 }
 
 .fail_toggle_btn:hover {
@@ -401,6 +445,24 @@ button_btn {
 	display: flex;
 	flex-direction: row;
 	padding-bottom: 16px;
+}
+
+.title_config_container label {
+	white-space: nowrap;
+}
+
+.title_input {
+	flex: 1 1 auto;
+	width: auto;
+	min-width: 0;
+	max-width: 100%;
+	margin-top: 5px;
+}
+
+.tracker_label_input {
+	width: 100%;
+	max-width: 20ch;
+	min-width: 0;
 }
 
 /* ── Overlay Header Row & Mode Indicator ── */

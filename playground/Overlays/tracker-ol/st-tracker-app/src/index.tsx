@@ -1,5 +1,5 @@
 import { hydrate, prerender as ssr } from 'preact-iso';
-import { useState, useEffect, useRef } from 'preact/hooks';
+import { useState, useEffect, useLayoutEffect, useRef } from 'preact/hooks';
 import { html } from 'htm/preact';
 
 import './style.css';
@@ -40,6 +40,76 @@ const TAB_SESSION_ID = generateSessionId();
 
 function createNewTrackerId(): number {
 	return Date.now();
+}
+
+const CARD_RESIZE_DURATION_MS = 420;
+const CARD_RESIZE_EASING = 'cubic-bezier(0.22, 0.8, 0.24, 1)';
+
+function getAnimatedWidth(element: HTMLElement) {
+	const rect = element.getBoundingClientRect();
+	const style = getComputedStyle(element);
+	if (style.boxSizing === 'border-box') return rect.width;
+
+	const borderX =
+		parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+	const paddingX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+
+	return Math.max(
+		0,
+		rect.width - borderX - (style.boxSizing === 'padding-box' ? 0 : paddingX),
+	);
+}
+
+function useAnimatedCardWidth<T extends HTMLElement>() {
+	const elementRef = useRef<T | null>(null);
+	const targetWidthRef = useRef<number | null>(null);
+	const animationRef = useRef<Animation | null>(null);
+
+	useLayoutEffect(() => {
+		const element = elementRef.current;
+		if (!element || typeof element.animate !== 'function') return;
+
+		const visualWidth = getAnimatedWidth(element);
+		const activeAnimation = animationRef.current;
+		const isAnimating =
+			activeAnimation?.playState === 'running' ||
+			activeAnimation?.playState === 'pending';
+		const currentTime =
+			typeof activeAnimation?.currentTime === 'number'
+				? activeAnimation.currentTime
+				: 0;
+
+		activeAnimation?.cancel();
+		const targetWidth = getAnimatedWidth(element);
+
+		const previousWidth = targetWidthRef.current;
+		targetWidthRef.current = targetWidth;
+		if (previousWidth === null) return;
+
+		const from = isAnimating ? visualWidth : previousWidth;
+		const targetChanged = Math.abs(targetWidth - previousWidth) > 0.5;
+		const visualChanged = Math.abs(targetWidth - from) > 0.5;
+
+		if (!visualChanged) return;
+		if (!targetChanged && !isAnimating) return;
+
+		animationRef.current = element.animate(
+			[
+				{ width: `${from}px` },
+				{ width: `${targetWidth}px` },
+			],
+			{
+				duration: targetChanged
+					? CARD_RESIZE_DURATION_MS
+					: Math.max(80, CARD_RESIZE_DURATION_MS - currentTime),
+				easing: CARD_RESIZE_EASING,
+			},
+		);
+	});
+
+	useEffect(() => () => animationRef.current?.cancel(), []);
+
+	return elementRef;
 }
 
 function getStoredGlobalState(): TrackerState {
@@ -100,6 +170,8 @@ export function App() {
 	});
 
 	const [isExpanded, setIsExpanded] = useState(false);
+	const overlayRef = useAnimatedCardWidth<HTMLDivElement>();
+	const controlCardRef = useAnimatedCardWidth<HTMLDivElement>();
 
 	const isLinkedRef = useRef(isLinked);
 	const trackerStateRef = useRef(trackerState);
@@ -385,7 +457,7 @@ export function App() {
 	const isInvalid = (t: Tracker) => t.value > t.max;
 
 	return html`
-		<div class="overlay_container">
+		<div class="overlay_container" ref=${overlayRef}>
 			<div class="overlay_header_row">
 				<h1 class="title_tag">${title}</h1>
 				<span class="mode_indicator_pill ${isLinked ? 'pill_linked' : 'pill_unlinked'}" title="${isLinked ? 'Linked to Global State' : 'Unlinked (Independent Tracker)'}">
@@ -423,7 +495,7 @@ export function App() {
 			</div>
 
 			<!-- Config Card (Collapsible) -->
-			<div class="control_card ${isExpanded ? 'visible' : 'hidden'}">
+			<div class="control_card ${isExpanded ? 'visible' : 'hidden'}" ref=${controlCardRef}>
 				<h3>CONFIG_PANEL</h3>
 
 				<!-- Shared Storage & Sync Control Section -->
@@ -463,10 +535,10 @@ export function App() {
 				<div class="title_config_container">
 					<label>Main Title:</label><br/>
 					<input
+						class="title_input"
 						type="text"
 						value="${title}"
 						onInput=${(e: Event) => updateTitle((e.target as HTMLInputElement).value)}
-						style="width: 90%; margin-top:5px;"
 					/>
 				</div>
 				<br/>
@@ -476,6 +548,7 @@ export function App() {
 					return html`
 						<div class="input_group" key=${t.id}>
 							<input
+								class="tracker_label_input"
 								type="text"
 								value="${t.label}"
 								onInput=${(e: Event) => updateTracker(t.id, 'label', (e.target as HTMLInputElement).value)}
