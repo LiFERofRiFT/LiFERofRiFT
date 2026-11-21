@@ -1,0 +1,183 @@
+# ==============================================================================
+# Monorepo Root .gitignore - dev-overlay-tracker
+# Covers: npm/pnpm/yarn/bun, React, Preact, Qwik, Tauri v2, SSL certs, env files
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Package Manager & Dependency Directories
+# ------------------------------------------------------------------------------
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ------------------------------------------------------------------------------
+# 2. Frontend Frameworks & Bundlers (React, Preact, Qwik, Vite)
+# ------------------------------------------------------------------------------
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+.output/
+
+# Qwik & Qwik City specific build/cache directories
+.qwik/
+.build/
+.clinic/
+
+# Preact & Framework caches
+.preact/
+.cache/
+.parcel-cache/
+.rollup.cache/
+.vite/
+.turbo/
+
+# TypeScript build caches
+*.tsbuildinfo
+next-env.d.ts
+
+# Linters, formatters & test coverage
+.eslintcache
+.oxlintcache
+coverage/
+.nyc_output/
+
+# ------------------------------------------------------------------------------
+# 3. Tauri v2 (Desktop & Mobile - https://v2.tauri.app/)
+# ------------------------------------------------------------------------------
+# Rust build artifacts
+target/
+**/src-tauri/target/
+
+# Tauri v2 generated mobile project directories (Android & iOS)
+**/src-tauri/gen/
+**/src-tauri/gen/android/
+**/src-tauri/gen/apple/
+
+# Android & Gradle artifacts
+.gradle/
+**/android/.gradle/
+**/android/build/
+**/android/app/build/
+**/android/local.properties
+local.properties
+
+# iOS / Xcode build artifacts
+**/ios/build/
+**/ios/DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+
+# Mobile package outputs
+*.apk
+*.aab
+*.ipa
+
+# Tauri updater & signing keys
+*.key
+*.key.pem
+tauri.key
+tauri-signing.key
+
+# ------------------------------------------------------------------------------
+# 4. Certificates & Keys (SSL/TLS, HTTPS local dev)
+# ------------------------------------------------------------------------------
+*.pem
+*.crt
+*.cer
+*.der
+*.pfx
+*.p12
+
+# Explicit cert folders (keep structure via .gitkeep)
+certs/*
+!certs/.gitkeep
+**/certs/*
+!**/certs/.gitkeep
+
+# ------------------------------------------------------------------------------
+# 5. Environment & Secret Configuration Files
+# ------------------------------------------------------------------------------
+.env
+.env.*
+*.env
+*.env.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Allow example / template env files to be tracked
+!.env.example
+!.env.sample
+!.env.template
+!*.env.example
+!*.env.sample
+!*.env.template
+
+# ------------------------------------------------------------------------------
+# 6. Application-specific Runtime & Mock Data
+# ------------------------------------------------------------------------------
+tracker-data.json
+**/tracker-data.json
+
+# ------------------------------------------------------------------------------
+# 7. Operating System & Editor Files
+# ------------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# JetBrains / IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+
+# Visual Studio Code (track shared config, ignore user state)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+
+# Visual Studio / Windows Dev
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.user
+*.userosscache
+*.sln.docstates
+
+# Keep .gitkeep files everywhere
+!.gitkeep
