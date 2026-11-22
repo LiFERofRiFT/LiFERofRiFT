@@ -10,9 +10,14 @@
 
 ## Getting Started
 
-- `npm run dev` - Starts a dev server at [http://localhost:5173/](http://localhost:5173/)
-- `npm run build` - Builds for production, emitting to `dist/`. Prerenders app to static HTML
-- `npm run preview` - Starts a server at [http://localhost:4173/](http://localhost:4173/) to test production build locally
+1st step is always check package.json script section to see available scripts for the project
+- In this project you have to run `npm run gen:cert` to generate certificates for your local network based certificates for https on IP address access(may be run your tracker on mobile)
+
+- If you are developing `npm run dev` - Starts a dev server at [http://localhost:5173/](http://localhost:5173/)
+
+ Or
+- First run `npm run build` - Builds for production, emitting to `dist/`. Prerenders app to static HTML.
+- After run `npm run preview` - Starts a server at [http://localhost:4173/](http://localhost:4173/) to test production build locally
 
 
 

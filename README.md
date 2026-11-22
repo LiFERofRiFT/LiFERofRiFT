@@ -11,7 +11,7 @@ This repository serves as a playground for my core stack and an exploration grou
 *   **[Qwik Framework](https://qwik.dev/)** - Resumable, ultra-fast web apps. ⚡
 *   **[Tauri Framework](https://v2.tauri.app/)** - Building lightweight, secure desktop applications with Rust & Web technologies. 🦀
 *   **[Supabase](https://supabase.com/)** - The open-source Firebase alternative for backend-as-a-service and real-time databases. 🌊
-*   **[React](https://react.dev/) / [React Native](https://reactnative.dev/)** - Crafting high-performance cross-platform interfaces. 📱
+*   **[React](https://react.dev/) / [React Native](https://reactnative.dev/) / [Preact](https://preactjs.com/) / [HTM](https://github.com/developit/htm)** - Crafting high-performance cross-platform interfaces. 📱
 
 ### 🧪 Exploration & Utilities:
 *   Exploring trending tech stacks & new paradigms.
