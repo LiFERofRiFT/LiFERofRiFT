@@ -22,7 +22,7 @@
 body {
 	margin: 0;
 	padding: 40px;
-	background-color: #050510;
+	background-color: transparent;
 	font-family: 'Segoe UI', Roboto, sans-serif;
 	color: var(--text-color);
 	display: flex;
@@ -91,6 +91,7 @@ body {
 
 .tracker_item {
 	margin-bottom: 20px;
+	max-width: calc(var(--card-max-width) - 40px);
 }
 
 /* ── Failed Tracker Overlay Aesthetics ── */
@@ -141,6 +142,7 @@ body {
 	margin-bottom: 5px;
 	font-size: 0.8rem;
 	min-width: 0;
+	align-items: flex-end;
 }
 
 .tracker_label {
@@ -152,7 +154,8 @@ body {
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	white-space: nowrap;
+	white-space: wrap;
+	max-width: calc(var(--card-max-width) - 106px);
 }
 .tracker_value_text {
 	color: var(--neon-green);
