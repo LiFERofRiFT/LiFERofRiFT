@@ -461,7 +461,7 @@ export function App() {
 			<div class="overlay_header_row">
 				<h1 class="title_tag">${title}</h1>
 				<span class="mode_indicator_pill ${isLinked ? 'pill_linked' : 'pill_unlinked'}" title="${isLinked ? 'Linked to Global State' : 'Unlinked (Independent Tracker)'}">
-					${isLinked ? '🔗' : '🔓'} //Global linked, Unkinked
+					${isLinked ? '🔗' : '🔓'} 
 				</span>
 			</div>
 
