@@ -59,6 +59,12 @@ body {
 	animation: overlay_edge_glimmer 7s linear infinite;
 }
 
+@property --edge-glimmer-angle {
+	syntax: '<angle>';
+	inherits: false;
+	initial-value: 0deg;
+}
+
 @keyframes overlay_edge_glimmer {
 	to {
 		--edge-glimmer-angle: 360deg;
@@ -162,6 +168,122 @@ body {
 .track_name_display.has_track {
 	color: var(--cyber-yellow);
 	text-shadow: 0 0 10px rgba(252, 238, 55, 0.6), 1px 1px var(--neon-pink);
+}
+
+/* ── Masked file path row ── */
+.path_row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	padding: 6px 10px;
+	background: rgba(10, 10, 25, 0.5);
+	border: 1px solid rgba(3, 233, 244, 0.3);
+	border-radius: 4px;
+	transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.path_row:hover,
+.path_row.is_revealed {
+	border-color: var(--neon-blue);
+	box-shadow: 0 0 10px rgba(3, 233, 244, 0.35), inset 0 0 8px rgba(3, 233, 244, 0.08);
+}
+
+.path_eye_btn {
+	flex: 0 0 auto;
+	width: 26px;
+	height: 26px;
+	border-radius: 4px;
+	border: 1px solid var(--neon-blue);
+	background: rgba(3, 233, 244, 0.1);
+	color: var(--neon-blue);
+	font-size: 0.8rem;
+	line-height: 1;
+	cursor: pointer;
+	transition: all 0.25s ease;
+}
+
+.path_eye_btn:hover {
+	background: var(--neon-blue);
+	color: #000;
+	box-shadow: 0 0 8px var(--neon-blue);
+}
+
+.path_eye_btn.revealed {
+	color: var(--cyber-yellow);
+	border-color: var(--cyber-yellow);
+	background: rgba(252, 238, 55, 0.12);
+	box-shadow: 0 0 8px rgba(252, 238, 55, 0.5);
+}
+
+.path_label {
+	flex: 0 0 auto;
+	font-size: 0.62rem;
+	font-weight: 800;
+	letter-spacing: 1px;
+	color: #888;
+}
+
+.path_value {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-family: 'Consolas', 'Courier New', monospace;
+	font-size: 0.72rem;
+}
+
+.path_masked {
+	color: #666;
+	letter-spacing: 1px;
+	animation: path_mask_flicker 6s infinite;
+}
+
+.path_masked .path_suffix {
+	color: var(--neon-green);
+	text-shadow: 0 0 6px rgba(44, 255, 5, 0.5);
+	letter-spacing: normal;
+}
+
+.path_real {
+	display: none;
+	color: var(--neon-green);
+	text-shadow: 0 0 6px rgba(44, 255, 5, 0.5);
+}
+
+.path_row:hover .path_real,
+.path_row.is_revealed .path_real {
+	display: inline;
+}
+
+.path_row:hover .path_masked,
+.path_row.is_revealed .path_masked {
+	display: none;
+}
+
+.path_row:hover .path_char,
+.path_row.is_revealed .path_char {
+	animation: path_char_in 0.3s ease both;
+	animation-delay: var(--d, 0ms);
+}
+
+@keyframes path_char_in {
+	from {
+		opacity: 0;
+		filter: blur(3px);
+		text-shadow: none;
+	}
+	to {
+		opacity: 1;
+		filter: blur(0);
+	}
+}
+
+@keyframes path_mask_flicker {
+	0%, 90%, 100% { opacity: 1; }
+	92% { opacity: 0.55; }
+	94% { opacity: 1; }
 }
 
 /* ── Seek bar ── */
@@ -398,6 +520,47 @@ body {
 	background: var(--neon-blue);
 	border: 2px solid #0a0a15;
 	box-shadow: 0 0 8px var(--neon-blue);
+}
+
+/* ── Music provider credits banner ── */
+.credits_banner {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 12px;
+	padding: 10px 14px;
+	background: linear-gradient(90deg, rgba(252, 238, 55, 0.12), rgba(255, 0, 255, 0.12));
+	border: 1px solid var(--cyber-yellow);
+	border-radius: 6px;
+	box-shadow: 0 0 12px rgba(252, 238, 55, 0.35), inset 0 0 10px rgba(252, 238, 55, 0.08);
+}
+
+.credits_banner_icon {
+	font-size: 1rem;
+	color: var(--cyber-yellow);
+	text-shadow: 0 0 8px rgba(252, 238, 55, 0.8);
+	animation: cyber_flicker 5s infinite;
+}
+
+.credits_banner_text {
+	font-size: 1.05rem;
+	font-weight: 800;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: var(--cyber-yellow);
+	text-shadow: 0 0 10px rgba(252, 238, 55, 0.8), 1px 1px var(--neon-pink);
+	animation: credits_glow 3s ease-in-out infinite;
+}
+
+@keyframes credits_glow {
+	0%, 100% {
+		text-shadow: 0 0 10px rgba(252, 238, 55, 0.8), 1px 1px var(--neon-pink);
+	}
+	50% {
+		text-shadow: 0 0 18px rgba(252, 238, 55, 1), 0 0 30px rgba(255, 0, 255, 0.6), 1px 1px var(--neon-pink);
+	}
 }
 
 /* ── Credits bar ── */

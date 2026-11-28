@@ -13,6 +13,7 @@ export interface PlayerState {
 	loop: boolean;
 	currentTime: number;
 	duration: number;
+	creditsText?: string;
 }
 
 interface TreeNode {
@@ -46,6 +47,8 @@ const SESSION_LINKED_KEY = 'overlay_player_is_linked';
 const SESSION_DATA_KEY = 'overlay_player_session_v1';
 const BROADCAST_CHANNEL_NAME = 'overlay_player_sync_channel';
 
+const DEFAULT_CREDITS_TEXT = 'Music by "StreamBeats"';
+
 const DEFAULT_STATE: PlayerState = {
 	title: 'AUDIO_PLAYER',
 	rootPath: null,
@@ -55,6 +58,7 @@ const DEFAULT_STATE: PlayerState = {
 	loop: false,
 	currentTime: 0,
 	duration: 0,
+	creditsText: DEFAULT_CREDITS_TEXT,
 };
 
 function generateSessionId(): string {
@@ -76,7 +80,8 @@ function isPlayerState(value: unknown): value is PlayerState {
 		typeof v.isPlaying === 'boolean' &&
 		typeof v.volume === 'number' &&
 		typeof v.loop === 'boolean' &&
-		typeof v.currentTime === 'number'
+		typeof v.currentTime === 'number' &&
+		(v.creditsText === undefined || typeof v.creditsText === 'string')
 	);
 }
 
@@ -127,6 +132,33 @@ function fileUrl(filePath: string) {
 
 function baseName(p: string) {
 	return p.split(/[\\/]/).filter(Boolean).pop() || p;
+}
+
+const PATH_MASK_CHAR = '█';
+
+function maskPathPrefix(p: string) {
+	return p.replace(/[^\s\\/]/g, PATH_MASK_CHAR);
+}
+
+// Splits a full path into a masked prefix (drive/root/username portion) and a
+// visible suffix (path relative to the media root: nested folders + file name).
+function splitDisplayPath(fullPath: string, rootPath: string | null) {
+	const norm = (p: string) => p.replace(/\//g, '\\').replace(/\\+$/, '');
+	const full = norm(fullPath);
+	const root = rootPath ? norm(rootPath) : null;
+
+	let rawPrefix = full;
+	let suffix = '';
+	if (root && full.toLowerCase().startsWith(root.toLowerCase() + '\\')) {
+		rawPrefix = full.slice(0, root.length + 1);
+		suffix = full.slice(root.length + 1);
+	}
+
+	return {
+		maskedPrefix: maskPathPrefix(rawPrefix),
+		rawPrefix,
+		suffix,
+	};
 }
 
 function formatTime(seconds: number) {
@@ -261,6 +293,7 @@ export function App() {
 	const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
 	const [displayTime, setDisplayTime] = useState(0);
 	const [scrubbing, setScrubbing] = useState(false);
+	const [pathRevealed, setPathRevealed] = useState(false);
 
 	// ── Config panel / folder browser state ──
 	const [isExpanded, setIsExpanded] = useState(false);
@@ -522,7 +555,7 @@ export function App() {
 	}, [rootPath]);
 
 	// ── Folder browser ──
-	const browse = async (dirPath?: string) => {
+	const browse = async (dirPath?: string | null) => {
 		setIsBrowsing(true);
 		setBrowseError(null);
 		try {
@@ -690,14 +723,28 @@ export function App() {
 		}
 	};
 
+	// Re-mask the path whenever the loaded track changes
+	useEffect(() => {
+		setPathRevealed(false);
+	}, [currentTrack]);
+
 	// ── Derived display values ──
 	const trackName = currentTrack ? baseName(currentTrack) : 'NO TRACK LOADED';
 	const tags = getTrackTags(rootPath || media?.root || null, currentTrack);
+	const creditsText = playerState.creditsText ?? DEFAULT_CREDITS_TEXT;
+	const mediaRoot = media?.root || rootPath;
+	const displayPath = currentTrack || mediaRoot || rootPath || null;
+	const pathSplit = displayPath ? splitDisplayPath(displayPath, mediaRoot || rootPath) : null;
+	const realPath = pathSplit ? pathSplit.rawPrefix + pathSplit.suffix : '';
 	const duration = playerState.duration || (audioRef.current?.duration ?? 0) || 0;
 	const progressPct = duration > 0 ? Math.min(100, (displayTime / duration) * 100) : 0;
 
 	const updateTitle = (newTitle: string) => {
 		commitState(prev => ({ ...prev, title: newTitle }));
+	};
+
+	const updateCreditsText = (newText: string) => {
+		commitState(prev => ({ ...prev, creditsText: newText }));
 	};
 
 	// Unlink session from global state
@@ -769,7 +816,6 @@ export function App() {
 		});
 	};
 
-	const mediaRoot = media?.root || rootPath;
 	const totalTracks = media ? countFiles(media.tree) : 0;
 
 	return html`
@@ -796,6 +842,24 @@ export function App() {
 			<!-- Now Playing Display -->
 			<div class="now_playing">
 				<div class="track_name_display ${currentTrack ? 'has_track' : ''}">${trackName}</div>
+
+				<!-- File path with privacy mask (hover or eye toggle to reveal) -->
+				<div class="path_row ${pathRevealed ? 'is_revealed' : ''}">
+					<button
+						class="path_eye_btn ${pathRevealed ? 'revealed' : ''}"
+						onClick=${() => setPathRevealed(v => !v)}
+						title="${pathRevealed ? 'Hide file path' : 'Reveal file path'}"
+					>
+						${pathRevealed ? '◉' : '○'}
+					</button>
+					<span class="path_label">PATH:</span>
+					<span class="path_value">
+						<span class="path_masked">${pathSplit ? html`${pathSplit.maskedPrefix}<span class="path_suffix">${pathSplit.suffix}</span>` : 'NO SOURCE LOADED'}</span>
+						<span class="path_real">${realPath
+							? realPath.split('').map((ch, i) => html`<span class="path_char" style="--d: ${i * 12}ms">${ch}</span>`)
+							: 'NO SOURCE LOADED'}</span>
+					</span>
+				</div>
 
 				<!-- Seek bar + loop toggle -->
 				<div class="seek_row">
@@ -855,6 +919,16 @@ export function App() {
 					</div>
 				</div>
 			</div>
+
+			<!-- Music provider credits banner (editable in config) -->
+			${creditsText.trim()
+				? html`
+						<div class="credits_banner">
+							<span class="credits_banner_icon">♫</span>
+							<span class="credits_banner_text">${creditsText}</span>
+						</div>
+					`
+				: ''}
 
 			<!-- Credits from credits.json in the media root -->
 			${media?.credits
@@ -1008,6 +1082,16 @@ export function App() {
 						type="text"
 						value="${title}"
 						onInput=${(e: Event) => updateTitle((e.target as HTMLInputElement).value)}
+					/>
+				</div>
+				<div class="title_config_container">
+					<label>Music Credits:</label><br/>
+					<input
+						class="title_input"
+						type="text"
+						placeholder='Music by "StreamBeats"'
+						value="${creditsText}"
+						onInput=${(e: Event) => updateCreditsText((e.target as HTMLInputElement).value)}
 					/>
 				</div>
 				<br/>
